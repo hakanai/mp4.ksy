@@ -12,17 +12,20 @@ types:
 
   box:
     seq:
-      - id: record_length
+      - id: length
         type: u4
-      - id: record_type
+      - id: type
         type: u4
         enum: fourcc
-      - id: record_data
-        size: record_length - 8
+      - id: data
+        size: length - 8
         type:
-          switch-on: record_type
+          switch-on: type
           cases:
             fourcc::avc1: avc1
+            fourcc::dinf: box_container
+            fourcc::dref: dref
+            fourcc::edts: box_container
             fourcc::mdia: box_container
             fourcc::minf: box_container
             fourcc::moov: box_container
@@ -31,11 +34,20 @@ types:
             fourcc::stsd: stsd
             fourcc::sv3d: box_container
             fourcc::trak: box_container
+            fourcc::uuid: uuid
             fourcc::ytmp: ytmp 
-    -webide-representation: '{record_type}'
+    -webide-representation: '{type}'
 
   box_container:
     seq:
+      - id: boxes
+        type: box
+        repeat: eos
+
+  dref:
+    seq:
+      - id: unknown_x0
+        size: 8
       - id: boxes
         type: box
         repeat: eos
@@ -56,6 +68,15 @@ types:
         type: box
         repeat: eos
 
+  # From old RFC for spherical video
+  # https://github.com/google/spatial-media/blob/master/docs/spherical-video-rfc.md
+  uuid:
+    seq:
+      - id: uuid
+        size: 16
+      - id: xml_metadata
+        size-eos: true
+
   ytmp:
     seq:
       - id: unknown_x0
@@ -75,7 +96,7 @@ types:
     seq:
       - id: data
         size-eos: true
-        process: zlib
+        #process: zlib
 
 enums:
 
@@ -84,7 +105,9 @@ enums:
     0x61766343: avc_c
     0x64666C38: dfl8
     0x64696E66: dinf
+    0x64726566: dref
     0x65647473: edts
+    0x656C7374: elst
     0x66747970: ftyp
     0x68646C72: hdlr
     0x6D646174: mdat
@@ -110,6 +133,7 @@ enums:
     0x73766864: svhd
     0x746B6864: tkhd
     0x7472616B: trak
+    0x75726C20: url
     0x75756964: uuid
     0x766D6864: vmhd
     0x79746D70: ytmp
