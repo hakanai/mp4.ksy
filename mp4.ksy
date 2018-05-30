@@ -4,11 +4,8 @@ meta:
   endian: be
 
 seq:
-#  - id: gap
-#    size: 0x2a5
   - id: atoms
     type: atom
-    #repeat: expr
     repeat: eos
 
 types:
