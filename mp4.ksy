@@ -4,13 +4,13 @@ meta:
   endian: be
 
 seq:
-  - id: atoms
-    type: atom
+  - id: boxes
+    type: box
     repeat: eos
 
 types:
 
-  atom:
+  box:
     seq:
       - id: record_length
         type: u4
@@ -23,37 +23,37 @@ types:
           switch-on: record_type
           cases:
             fourcc::avc1: avc1
-            fourcc::mdia: atom_container
-            fourcc::minf: atom_container
-            fourcc::moov: atom_container
-            fourcc::proj: atom_container
-            fourcc::stbl: atom_container
+            fourcc::mdia: box_container
+            fourcc::minf: box_container
+            fourcc::moov: box_container
+            fourcc::proj: box_container
+            fourcc::stbl: box_container
             fourcc::stsd: stsd
-            fourcc::sv3d: atom_container
-            fourcc::trak: atom_container
+            fourcc::sv3d: box_container
+            fourcc::trak: box_container
             fourcc::ytmp: ytmp 
     -webide-representation: '{record_type}'
 
-  atom_container:
+  box_container:
     seq:
-      - id: atoms
-        type: atom
+      - id: boxes
+        type: box
         repeat: eos
 
   stsd:
     seq:
       - id: unknown_x0
         type: u8
-      - id: atoms
-        type: atom
+      - id: boxes
+        type: box
         repeat: eos
 
   avc1:
     seq:
       - id: unknown_x0
         size: 78
-      - id: atoms
-        type: atom
+      - id: boxes
+        type: box
         repeat: eos
 
   ytmp:
@@ -80,7 +80,6 @@ types:
 enums:
 
   fourcc:
-
     0x61766331: avc1
     0x61766343: avc_c
     0x64666C38: dfl8
