@@ -31,6 +31,7 @@ types:
             fourcc::stsd: stsd
             fourcc::sv3d: atom_container
             fourcc::trak: atom_container
+            fourcc::ytmp: ytmp 
     -webide-representation: '{record_type}'
 
   atom_container:
@@ -54,6 +55,27 @@ types:
       - id: atoms
         type: atom
         repeat: eos
+
+  ytmp:
+    seq:
+      - id: unknown_x0
+        type: u4
+      - id: crc
+        type: u4
+      - id: encoding
+        type: u4
+        enum: fourcc
+      - id: payload
+        type:
+          switch-on: encoding
+          cases:
+            fourcc::dfl8: ytmp_payload_zlib
+
+  ytmp_payload_zlib:
+    seq:
+      - id: data
+        size-eos: true
+        process: zlib
 
 enums:
 
@@ -90,4 +112,4 @@ enums:
     0x70726F6A: proj
     0x70726864: prhd
     0x79746D70: ytmp
-
+    0x64666C38: dfl8
